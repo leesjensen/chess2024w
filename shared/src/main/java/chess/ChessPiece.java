@@ -1,6 +1,12 @@
 package chess;
 
+import chess.rules.Rules;
+
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+
+import static chess.ChessGame.*;
 
 /**
  * Represents a single chess piece
@@ -10,7 +16,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private final TeamColor color;
+    private final PieceType type;
+
+    public ChessPiece(TeamColor color, PieceType type) {
+        this.color = color;
+        this.type = type;
     }
 
     /**
@@ -28,15 +39,15 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+    public TeamColor getTeamColor() {
+        return color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
     }
 
     /**
@@ -46,7 +57,32 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+        var piece = board.getPiece(pos);
+
+        if (piece != null) {
+            return Rules.movementRule(piece.getPieceType()).moves(board, pos);
+        }
+
+        return new HashSet<>();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece piece = (ChessPiece) o;
+        return color == piece.color && type == piece.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, type);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", type, color);
     }
 }

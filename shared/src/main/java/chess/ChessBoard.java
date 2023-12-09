@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +10,17 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    final private ChessPiece[][] squares = new ChessPiece[8][8];
+    final public ArrayList<ChessMove> history = new ArrayList<>();
 
     public ChessBoard() {
-        
+    }
+
+
+    public ChessBoard(ChessBoard copy) {
+        for (var i = 0; i < 8; i++) {
+            System.arraycopy(copy.squares[i], 0, squares[i], 0, 8);
+        }
     }
 
     /**
@@ -19,7 +30,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -30,7 +41,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -38,6 +49,48 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        var pieces = new ChessPiece.PieceType[]{
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
+        for (var i = 0; i < 8; i++) {
+            squares[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, pieces[i]);
+            squares[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            squares[2][i] = null;
+            squares[3][i] = null;
+            squares[4][i] = null;
+            squares[5][i] = null;
+            squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            squares[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, pieces[i]);
+        }
+    }
+
+    public List<ChessMove> getHistory() {
+        return history;
+    }
+
+    public boolean isSquareEmpty(int row, int col) {
+        var pieceAt = getPiece(new ChessPosition(row, col));
+        return pieceAt == null;
+    }
+
+
+    public ChessMove getLastMove() {
+        return history.get(history.size() - 1);
+    }
+
+    public boolean isOriginalPosition(ChessPosition pos) {
+        for (var bh : getHistory()) {
+            if (bh.getStartPosition().equals(pos)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
