@@ -54,7 +54,8 @@ public class ChessMove {
 
     @Override
     public int hashCode() {
-        return (1000 * start.hashCode()) + end.hashCode();
+        var promotionCode = (promotionPiece == null ? 9 : promotionPiece.ordinal());
+        return (1000 * start.hashCode()) + end.hashCode() + promotionCode;
     }
 
 
