@@ -1,7 +1,6 @@
 package dataAccessTests;
 
 import dataAccess.DataAccess;
-import dataAccess.DbInfo;
 import dataAccess.MemoryDataAccess;
 import dataAccess.MySqlDataAccess;
 import model.UserData;
@@ -14,13 +13,7 @@ import java.util.List;
 public class DataAccessTests {
 
     private DataAccess startDB(Class<? extends DataAccess> databaseClass) throws Exception {
-        DataAccess db;
-        if (MySqlDataAccess.class.equals(databaseClass)) {
-            var dataInfo = new DbInfo("test", "admin", "monkeypie", "jdbc:mysql://localhost:3306");
-            db = new MySqlDataAccess(dataInfo);
-        } else {
-            db = new MemoryDataAccess();
-        }
+        DataAccess db = databaseClass.getDeclaredConstructor().newInstance();
         db.clear();
         return db;
     }

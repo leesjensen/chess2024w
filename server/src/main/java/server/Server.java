@@ -1,10 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.DbInfo;
 import dataAccess.DataAccess;
-import dataAccess.MemoryDataAccess;
-import dataAccess.MySqlDataAccess;
 import model.*;
 import service.*;
 import spark.*;
@@ -23,7 +20,7 @@ public class Server {
 
     public static final Logger log = Logger.getLogger("chess");
 
-    public int run(int desiredPort) throws Exception {
+    public int run(int desiredPort) {
         try {
             dataAccess = (DataAccess) Class.forName(AppConfig.props.dbClass()).getDeclaredConstructor().newInstance();
 
