@@ -1,8 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
+import dataAccess.DbInfo;
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
+import dataAccess.MySqlDataAccess;
 import model.*;
 import service.*;
 import spark.*;
@@ -23,9 +25,13 @@ public class Server {
     public Server() {
     }
 
-    public int run(int desiredPort, String dbConnectionUrl) {
+    public int run(int desiredPort, DbInfo dbInfo) {
         try {
-            dataAccess = new MemoryDataAccess();
+            if (dbInfo == null) {
+                dataAccess = new MemoryDataAccess();
+            } else {
+                dataAccess = new MySqlDataAccess(dbInfo);
+            }
 
             userService = new UserService(dataAccess);
             gameService = new GameService(dataAccess);

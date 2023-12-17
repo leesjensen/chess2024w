@@ -21,6 +21,10 @@ public class ChessGame {
         this.turn = TeamColor.WHITE;
     }
 
+    public static ChessGame create(String serializedGame) {
+        return new Gson().fromJson(serializedGame, ChessGame.class);
+    }
+    
     /**
      * @return Which team's turn it is
      */
