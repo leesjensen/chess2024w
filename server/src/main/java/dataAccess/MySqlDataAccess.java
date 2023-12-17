@@ -3,6 +3,7 @@ package dataAccess;
 import chess.ChessGame;
 import model.*;
 import spark.utils.StringUtils;
+import util.AppConfig;
 
 import java.sql.*;
 import java.util.*;
@@ -11,10 +12,12 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
-    final private DbInfo dbInfo;
+    final private String databaseName = AppConfig.props.dbName();
+    final private String connectionUrl = String.format("jdbc:mysql://%s:%d", AppConfig.props.dbHost(), AppConfig.props.dbPort());
+    final private String username = AppConfig.props.dbUser();
+    final private String password = AppConfig.props.dbPassword();
 
-    public MySqlDataAccess(DbInfo dbInfo) throws DataAccessException {
-        this.dbInfo = dbInfo;
+    public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
     }
 
@@ -142,10 +145,6 @@ public class MySqlDataAccess implements DataAccess {
         return result;
     }
 
-    public String description() {
-        return String.format("MySQL - %s", dbInfo.databaseName());
-    }
-
     private GameData readGameData(ResultSet rs) throws SQLException {
         var gs = rs.getString("game");
         var gameID = rs.getInt("gameID");
@@ -206,19 +205,20 @@ public class MySqlDataAccess implements DataAccess {
 
     private void createDatabase(Connection conn) throws SQLException {
         try (var createStmt = conn.createStatement()) {
-            createStmt.execute("CREATE DATABASE IF NOT EXISTS `" + dbInfo.databaseName() + "`");
+            createStmt.execute("CREATE DATABASE IF NOT EXISTS `" + databaseName + "`");
         }
 
-        conn.setCatalog(dbInfo.databaseName());
+        conn.setCatalog(databaseName);
     }
 
     private Connection getConnection() throws DataAccessException {
-        return getConnection(dbInfo.databaseName());
+        return getConnection(databaseName);
     }
+
 
     private Connection getConnection(String databaseName) throws DataAccessException {
         try {
-            var connection = DriverManager.getConnection(dbInfo.connectionUrl(), dbInfo.username(), dbInfo.password());
+            var connection = DriverManager.getConnection(connectionUrl, username, password);
             if (!StringUtils.isEmpty(databaseName)) {
                 connection.setCatalog(databaseName);
             }

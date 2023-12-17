@@ -8,6 +8,7 @@ import dataAccess.MySqlDataAccess;
 import model.*;
 import service.*;
 import spark.*;
+import util.AppConfig;
 import util.CodedException;
 
 import java.util.*;
@@ -22,16 +23,9 @@ public class Server {
 
     public static final Logger log = Logger.getLogger("chess");
 
-    public Server() {
-    }
-
-    public int run(int desiredPort, DbInfo dbInfo) {
+    public int run(int desiredPort) throws Exception {
         try {
-            if (dbInfo == null) {
-                dataAccess = new MemoryDataAccess();
-            } else {
-                dataAccess = new MySqlDataAccess(dbInfo);
-            }
+            dataAccess = (DataAccess) Class.forName(AppConfig.props.dbClass()).getDeclaredConstructor().newInstance();
 
             userService = new UserService(dataAccess);
             gameService = new GameService(dataAccess);
