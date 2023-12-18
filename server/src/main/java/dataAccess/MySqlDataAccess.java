@@ -154,14 +154,17 @@ public class MySqlDataAccess implements DataAccess {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS `authentication` (
+            CREATE DATABASE IF NOT EXISTS %DBNAME%
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS %DBNAME%.authentication (
               `authToken` varchar(100) NOT NULL,
               `username` varchar(100) NOT NULL,
               PRIMARY KEY (`authToken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
-            CREATE TABLE IF NOT EXISTS  `game` (
+            CREATE TABLE IF NOT EXISTS  %DBNAME%.game (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `gameName` varchar(45) DEFAULT NULL,
               `whitePlayerName` varchar(100) DEFAULT NULL,
@@ -172,7 +175,7 @@ public class MySqlDataAccess implements DataAccess {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
-            CREATE TABLE IF NOT EXISTS `user` (
+            CREATE TABLE IF NOT EXISTS %DBNAME%.user (
               `username` varchar(45) NOT NULL,
               `password` varchar(45) NOT NULL,
               `email` varchar(45) NOT NULL,
@@ -185,9 +188,8 @@ public class MySqlDataAccess implements DataAccess {
     private void configureDatabase() throws DataAccessException {
         try {
             try (var conn = DbInfo.getConnection(null)) {
-                createDatabase(conn);
-
                 for (var statement : createStatements) {
+                    statement = statement.replace("%DBNAME%", databaseName);
                     try (var preparedStatement = conn.prepareStatement(statement)) {
                         preparedStatement.executeUpdate();
                     }
@@ -196,14 +198,6 @@ public class MySqlDataAccess implements DataAccess {
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
         }
-    }
-
-    private void createDatabase(Connection conn) throws SQLException {
-        try (var createStmt = conn.createStatement()) {
-            createStmt.execute("CREATE DATABASE IF NOT EXISTS `" + databaseName + "`");
-        }
-
-        conn.setCatalog(databaseName);
     }
 
     private void executeCommand(String statement) throws DataAccessException {
