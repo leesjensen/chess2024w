@@ -2,17 +2,18 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
+import dataAccess.MemoryDataAccess;
 import model.*;
 import service.*;
 import spark.*;
 import util.AppConfig;
 import util.CodedException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Logger;
 
 public class Server {
-    DataAccess dataAccess;
     UserService userService;
     GameService gameService;
     AdminService adminService;
@@ -22,12 +23,7 @@ public class Server {
 
     public int run(int desiredPort) {
         try {
-            dataAccess = (DataAccess) Class.forName(AppConfig.props.dbClass()).getDeclaredConstructor().newInstance();
-
-            userService = new UserService(dataAccess);
-            gameService = new GameService(dataAccess);
-            adminService = new AdminService(dataAccess);
-            authService = new AuthService(dataAccess);
+            loadServices();
 
             Spark.port(desiredPort);
             Spark.externalStaticFileLocation("web");
@@ -58,7 +54,6 @@ public class Server {
         return Spark.port();
     }
 
-
     public void stop() {
         Spark.stop();
     }
@@ -71,6 +66,17 @@ public class Server {
         return body;
     }
 
+    private void loadServices() throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        var dataAccessClass = Class.forName(AppConfig.props.dbClass());
+        var dataAccess = (DataAccess) dataAccessClass.getDeclaredConstructor().newInstance();
+
+        userService = new UserService(dataAccess);
+        gameService = new GameService(dataAccess);
+        adminService = new AdminService(dataAccess);
+        authService = new AuthService(dataAccess);
+    }
+
+
     private void log(Request req, Response res) {
         log.info(String.format("[%s] %s - %s", req.requestMethod(), req.pathInfo(), res.status()));
     }
@@ -78,7 +84,7 @@ public class Server {
     /**
      * Endpoint for [DELETE] /db
      */
-    public Object clearApplication(Request ignoreReq, Response res) throws CodedException {
+    private Object clearApplication(Request ignoreReq, Response res) throws CodedException {
         adminService.clearApplication();
         return send();
     }
