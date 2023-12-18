@@ -2,7 +2,6 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
-import dataAccess.MemoryDataAccess;
 import model.*;
 import service.*;
 import spark.*;
@@ -58,14 +57,6 @@ public class Server {
         Spark.stop();
     }
 
-    public Object errorHandler(CodedException e, Request req, Response res) {
-        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
-        res.type("application/json");
-        res.status(e.statusCode());
-        res.body(body);
-        return body;
-    }
-
     private void loadServices() throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         var dataAccessClass = Class.forName(AppConfig.props.dbClass());
         var dataAccess = (DataAccess) dataAccessClass.getDeclaredConstructor().newInstance();
@@ -74,6 +65,14 @@ public class Server {
         gameService = new GameService(dataAccess);
         adminService = new AdminService(dataAccess);
         authService = new AuthService(dataAccess);
+    }
+
+    private Object errorHandler(CodedException e, Request req, Response res) {
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
+        res.type("application/json");
+        res.status(e.statusCode());
+        res.body(body);
+        return body;
     }
 
 
