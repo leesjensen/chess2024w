@@ -2,8 +2,6 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.*;
-import spark.utils.StringUtils;
-import util.AppConfig;
 
 import java.sql.*;
 import java.util.*;
@@ -12,10 +10,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
-    final private String databaseName = AppConfig.props.dbName();
-    final private String connectionUrl = String.format("jdbc:mysql://%s:%d", AppConfig.props.dbHost(), AppConfig.props.dbPort());
-    final private String username = AppConfig.props.dbUser();
-    final private String password = AppConfig.props.dbPassword();
+    private String databaseName = "chess";
 
     public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
@@ -38,7 +33,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public UserData readUser(String username) throws DataAccessException {
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement("SELECT password, email from `user` WHERE username=?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -64,7 +59,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public AuthData readAuth(String authToken) throws DataAccessException {
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement("SELECT username from `authentication` WHERE authToken=?")) {
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -111,7 +106,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public GameData readGame(int gameID) throws DataAccessException {
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whitePlayerName, blackPlayerName, game, state FROM `game` WHERE gameID=?")) {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -129,7 +124,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public Collection<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whitePlayerName, blackPlayerName, game, state FROM `game`")) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
@@ -189,7 +184,7 @@ public class MySqlDataAccess implements DataAccess {
 
     private void configureDatabase() throws DataAccessException {
         try {
-            try (var conn = getConnection(null)) {
+            try (var conn = DbInfo.getConnection(null)) {
                 createDatabase(conn);
 
                 for (var statement : createStatements) {
@@ -211,25 +206,8 @@ public class MySqlDataAccess implements DataAccess {
         conn.setCatalog(databaseName);
     }
 
-    private Connection getConnection() throws DataAccessException {
-        return getConnection(databaseName);
-    }
-
-
-    private Connection getConnection(String databaseName) throws DataAccessException {
-        try {
-            var connection = DriverManager.getConnection(connectionUrl, username, password);
-            if (!StringUtils.isEmpty(databaseName)) {
-                connection.setCatalog(databaseName);
-            }
-            return connection;
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
-    }
-
     private void executeCommand(String statement) throws DataAccessException {
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -239,7 +217,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = getConnection()) {
+        try (var conn = DbInfo.getConnection(databaseName)) {
             try (var preparedStatement = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
