@@ -10,8 +10,6 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
-    private String databaseName = "chess";
-
     public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
     }
@@ -33,7 +31,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public UserData readUser(String username) throws DataAccessException {
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT password, email from `user` WHERE username=?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -59,7 +57,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public AuthData readAuth(String authToken) throws DataAccessException {
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT username from `authentication` WHERE authToken=?")) {
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -106,7 +104,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public GameData readGame(int gameID) throws DataAccessException {
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whitePlayerName, blackPlayerName, game, state FROM `game` WHERE gameID=?")) {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
@@ -124,7 +122,7 @@ public class MySqlDataAccess implements DataAccess {
 
     public Collection<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whitePlayerName, blackPlayerName, game, state FROM `game`")) {
                 try (var rs = preparedStatement.executeQuery()) {
                     while (rs.next()) {
@@ -154,17 +152,14 @@ public class MySqlDataAccess implements DataAccess {
 
     private final String[] createStatements = {
             """
-            CREATE DATABASE IF NOT EXISTS %DBNAME%
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS %DBNAME%.authentication (
+            CREATE TABLE IF NOT EXISTS authentication (
               `authToken` varchar(100) NOT NULL,
               `username` varchar(100) NOT NULL,
               PRIMARY KEY (`authToken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
-            CREATE TABLE IF NOT EXISTS  %DBNAME%.game (
+            CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `gameName` varchar(45) DEFAULT NULL,
               `whitePlayerName` varchar(100) DEFAULT NULL,
@@ -175,7 +170,7 @@ public class MySqlDataAccess implements DataAccess {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
-            CREATE TABLE IF NOT EXISTS %DBNAME%.user (
+            CREATE TABLE IF NOT EXISTS user (
               `username` varchar(45) NOT NULL,
               `password` varchar(45) NOT NULL,
               `email` varchar(45) NOT NULL,
@@ -187,9 +182,9 @@ public class MySqlDataAccess implements DataAccess {
 
     private void configureDatabase() throws DataAccessException {
         try {
-            try (var conn = DbInfo.getConnection(null)) {
+            DatabaseManager.createDatabase();
+            try (var conn = DatabaseManager.getConnection()) {
                 for (var statement : createStatements) {
-                    statement = statement.replace("%DBNAME%", databaseName);
                     try (var preparedStatement = conn.prepareStatement(statement)) {
                         preparedStatement.executeUpdate();
                     }
@@ -201,7 +196,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     private void executeCommand(String statement) throws DataAccessException {
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -211,7 +206,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DbInfo.getConnection(databaseName)) {
+        try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
