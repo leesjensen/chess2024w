@@ -41,19 +41,19 @@ public class StandardAPITests {
     public static void init() {
         server = new Server();
         var port = server.run(0);
-        System.out.print("Running on " + port);
+        System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
 
         existingUser = new TestModels.TestUser();
-        existingUser.username = "Joseph";
-        existingUser.password = "Smith";
-        existingUser.email = "urim@thummim.net";
+        existingUser.username = "ExistingUser";
+        existingUser.password = "existingUserPassword";
+        existingUser.email = "eu@mail.com";
 
         newUser = new TestModels.TestUser();
-        newUser.username = "testUsername";
-        newUser.password = "testPassword";
-        newUser.email = "testEmail";
+        newUser.username = "NewUser";
+        newUser.password = "newUserPassword";
+        newUser.email = "nu@mail.com";
 
         createRequest = new TestModels.TestCreateRequest();
         createRequest.gameName = "testGame";
