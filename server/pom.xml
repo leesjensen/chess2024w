@@ -51,6 +51,11 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>web</directory>
+            </resource>
+        </resources>
     </build>
 
     <dependencies>

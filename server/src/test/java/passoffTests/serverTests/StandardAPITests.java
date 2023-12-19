@@ -2,15 +2,11 @@ package passoffTests.serverTests;
 
 import chess.ChessGame;
 import org.junit.jupiter.api.*;
-import passoffTests.TestFactory;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
 import passoffTests.testClasses.TestModels;
+import server.Server;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,12 +26,25 @@ public class StandardAPITests {
     private static TestModels.TestCreateRequest createRequest;
 
     private static TestServerFacade serverFacade;
+    private static Server server;
 
     private String existingAuth;
 
 
+    @AfterAll
+    static void stopServer() {
+        server.stop();
+    }
+
+
     @BeforeAll
     public static void init() {
+        server = new Server();
+        var port = server.run(0);
+        System.out.print("Running on " + port);
+
+        serverFacade = new TestServerFacade("localhost", Integer.toString(port));
+
         existingUser = new TestModels.TestUser();
         existingUser.username = "Joseph";
         existingUser.password = "Smith";
@@ -48,8 +57,6 @@ public class StandardAPITests {
 
         createRequest = new TestModels.TestCreateRequest();
         createRequest.gameName = "testGame";
-
-        serverFacade = new TestServerFacade("localhost", "8080");
     }
 
 
@@ -71,7 +78,7 @@ public class StandardAPITests {
     @Test
     @Order(1)
     @DisplayName("Static Files")
-    public void staticFiles() throws TestException {
+    public void staticFiles() throws Exception {
         String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");

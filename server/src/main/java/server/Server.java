@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
+import dataAccess.MySqlDataAccess;
 import model.*;
 import service.*;
 import spark.*;
@@ -9,6 +10,7 @@ import util.AppConfig;
 import util.CodedException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -25,7 +27,9 @@ public class Server {
             loadServices();
 
             Spark.port(desiredPort);
-            Spark.externalStaticFileLocation("web");
+
+            var webDir = Paths.get(Server.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "web");
+            Spark.externalStaticFileLocation(webDir.toString());
 
             Spark.delete("/db", this::clearApplication);
             Spark.post("/user", this::registerUser);
@@ -57,9 +61,8 @@ public class Server {
         Spark.stop();
     }
 
-    private void loadServices() throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        var dataAccessClass = Class.forName(AppConfig.props.dbClass());
-        var dataAccess = (DataAccess) dataAccessClass.getDeclaredConstructor().newInstance();
+    private void loadServices() throws Exception {
+        var dataAccess = new MySqlDataAccess();
 
         userService = new UserService(dataAccess);
         gameService = new GameService(dataAccess);
