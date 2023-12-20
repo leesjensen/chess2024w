@@ -19,11 +19,10 @@ public class DatabaseManager {
      */
     static {
         try {
-            var propsPath = Paths.get(DatabaseManager.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "db.properties");
-            var propsFile = new File(propsPath.toString());
-            try (var in = new FileInputStream(propsFile)) {
+            try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
+                if (propStream == null) throw new Exception("Unable to laod db.properties");
                 Properties props = new Properties();
-                props.load(in);
+                props.load(propStream);
                 databaseName = props.getProperty("db.name");
                 user = props.getProperty("db.user");
                 password = props.getProperty("db.password");
@@ -31,7 +30,6 @@ public class DatabaseManager {
                 var host = props.getProperty("db.host");
                 var port = Integer.parseInt(props.getProperty("db.port"));
                 connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
-
             }
         } catch (Exception ex) {
             throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
