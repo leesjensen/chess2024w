@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -244,5 +241,97 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return 31 * Arrays.deepHashCode(squares);
+    }
+
+
+    private static final int BLACK = 0;
+    private static final int RED = 1;
+    private static final int GREEN = 2;
+    private static final int YELLOW = 3;
+    private static final int BLUE = 4;
+    private static final int MAGENTA = 5;
+    private static final int CYAN = 6;
+    private static final int WHITE = 7;
+
+    private static final String COLOR_RESET = "\u001b[0m";
+
+    /**
+     * Set both the foreground and background color. Foreground is 3, background is 4.
+     */
+    private static String color(int FG, int BG) {
+        return String.format("\u001b[3%d;4%dm", FG, BG);
+    }
+
+    /**
+     * Set the foreground color.
+     */
+    private static String color(int FG) {
+        return String.format("\u001b[1;3%dm", FG);
+    }
+
+    private static final String BORDER = color(BLACK, YELLOW);
+
+    private static final String BOARD_BLACK = color(WHITE, BLACK);
+    private static final String BOARD_WHITE = color(BLACK, WHITE);
+    private static final String BOARD_HIGHLIGHT = color(GREEN, MAGENTA);
+
+    private static final String BLACK_PIECE = color(RED);
+    private static final String WHITE_PIECE = color(GREEN);
+
+    private static final Map<ChessPiece.PieceType, String> pieceMap = Map.of(
+            ChessPiece.PieceType.KING, "K",
+            ChessPiece.PieceType.QUEEN, "Q",
+            ChessPiece.PieceType.BISHOP, "B",
+            ChessPiece.PieceType.KNIGHT, "N",
+            ChessPiece.PieceType.ROOK, "R",
+            ChessPiece.PieceType.PAWN, "P"
+    );
+
+    @Override
+    public String toString() {
+        return toString(ChessGame.TeamColor.WHITE, null);
+    }
+
+
+    public String toString(ChessGame.TeamColor playerColor, Collection<ChessPosition> highlights) {
+        var sb = new StringBuilder();
+        try {
+            var currentSquare = BOARD_WHITE;
+            var rows = new int[]{7, 6, 5, 4, 3, 2, 1, 0};
+            var columns = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
+            var columnsLetters = "    a  b  c  d  e  f  g  h    ";
+            if (playerColor == ChessGame.TeamColor.BLACK) {
+                columnsLetters = "    h  g  f  e  d  c  b  a    ";
+                rows = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
+                columns = new int[]{7, 6, 5, 4, 3, 2, 1, 0};
+            }
+            sb.append(BORDER).append(columnsLetters).append(COLOR_RESET).append("\n");
+            for (var i : rows) {
+                var row = " " + (i + 1) + " ";
+                sb.append(BORDER).append(row).append(COLOR_RESET);
+                for (var j : columns) {
+                    var squareColor = currentSquare;
+                    if (highlights != null && highlights.contains(new ChessPosition(i + 1, j + 1))) {
+                        squareColor = BOARD_HIGHLIGHT;
+                    }
+                    var piece = squares[i][j];
+                    if (piece != null) {
+                        var color = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? WHITE_PIECE : BLACK_PIECE;
+                        var p = pieceMap.get(piece.getPieceType());
+                        sb.append(squareColor).append(color).append(" ").append(p).append(" ").append(COLOR_RESET);
+                    } else {
+                        sb.append(squareColor).append("   ").append(COLOR_RESET);
+                    }
+                    currentSquare = currentSquare.equals(BOARD_BLACK) ? BOARD_WHITE : BOARD_BLACK;
+                }
+                sb.append(BORDER).append(row).append(COLOR_RESET);
+                sb.append('\n');
+                currentSquare = currentSquare.equals(BOARD_BLACK) ? BOARD_WHITE : BOARD_BLACK;
+            }
+            sb.append(BORDER).append(columnsLetters).append(COLOR_RESET).append("\n");
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+        return sb.toString();
     }
 }

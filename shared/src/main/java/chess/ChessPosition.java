@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Locale;
+
 /**
  * Represents a single square position on a chess board
  * <p>
@@ -14,6 +16,18 @@ public class ChessPosition {
         this.row = row;
         this.col = col;
     }
+
+
+    public ChessPosition(String notation) throws Exception {
+        notation = notation.toLowerCase(Locale.ROOT);
+        if (notation.length() == 2) {
+            col = notation.charAt(0) - 'a' + 1;
+            row = notation.charAt(1) - '1' + 1;
+            return;
+        }
+        throw new Exception("Invalid notation");
+    }
+
 
     /**
      * @return which row this position is in

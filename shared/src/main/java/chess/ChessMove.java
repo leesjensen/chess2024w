@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Locale;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -17,6 +19,33 @@ public class ChessMove {
         this.start = new ChessPosition(start.getRow(), start.getColumn());
         this.end = new ChessPosition(end.getRow(), end.getColumn());
         this.promotionPiece = promotionPiece;
+    }
+
+
+    public ChessMove(String notation) throws Exception {
+        notation = notation.toLowerCase(Locale.ROOT);
+        if (notation.length() >= 4) {
+            int colStart = notation.charAt(0) - 'a' + 1;
+            int rowStart = notation.charAt(1) - '1' + 1;
+            int colEnd = notation.charAt(2) - 'a' + 1;
+            int rowEnd = notation.charAt(3) - '1' + 1;
+
+            start = new ChessPosition(rowStart, colStart);
+            end = new ChessPosition(rowEnd, colEnd);
+            if (notation.length() == 5) {
+                promotionPiece = switch (notation.charAt(4)) {
+                    case 'q' -> ChessPiece.PieceType.QUEEN;
+                    case 'b' -> ChessPiece.PieceType.BISHOP;
+                    case 'n' -> ChessPiece.PieceType.KNIGHT;
+                    case 'r' -> ChessPiece.PieceType.ROOK;
+                    default -> null;
+                };
+            } else {
+                promotionPiece = null;
+            }
+            return;
+        }
+        throw new Exception("Invalid notation");
     }
 
     /**
