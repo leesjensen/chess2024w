@@ -69,7 +69,7 @@ public class PersistenceTests {
         Assertions.assertEquals(game1.gameID, createResult.gameID);
         Assertions.assertEquals(createRequest.gameName, game1.gameName, "Game name changed after restart");
         Assertions.assertEquals(registerRequest.username, game1.whiteUsername,
-                "White player username changed after restart");
+                "White player user changed after restart");
 
         //test that we can still log in
         TestModels.TestLoginRequest loginRequest = new TestModels.TestLoginRequest();

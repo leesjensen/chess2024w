@@ -103,7 +103,7 @@ public class StandardAPITests {
                 loginResult.message != null && loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response returned error message");
         Assertions.assertEquals(existingUser.username, loginResult.username,
-                "Response did not give the same username as user");
+                "Response did not give the same user as user");
         Assertions.assertNotNull(loginResult.authToken, "Response did not return authentication String");
     }
 
@@ -122,7 +122,7 @@ public class StandardAPITests {
                 "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
-        Assertions.assertNull(loginResult.username, "Response incorrectly returned username");
+        Assertions.assertNull(loginResult.username, "Response incorrectly returned user");
         Assertions.assertNull(loginResult.authToken, "Response incorrectly return authentication String");
     }
 
@@ -141,7 +141,7 @@ public class StandardAPITests {
                 "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
-        Assertions.assertNull(loginResult.username, "Response incorrectly returned username");
+        Assertions.assertNull(loginResult.username, "Response incorrectly returned user");
         Assertions.assertNull(loginResult.authToken, "Response incorrectly return authentication String");
     }
 
@@ -229,7 +229,7 @@ public class StandardAPITests {
                 registerResult.message != null && registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
         Assertions.assertEquals(newUser.username, registerResult.username,
-                "Response did not have the same username as was registered");
+                "Response did not have the same user as was registered");
         Assertions.assertNotNull(registerResult.authToken, "Response did not contain an authentication string");
     }
 
@@ -251,7 +251,7 @@ public class StandardAPITests {
                 "Server response code was not 403 Forbidden");
         Assertions.assertTrue(registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
-        Assertions.assertNull(registerResult.username, "Response incorrectly contained username");
+        Assertions.assertNull(registerResult.username, "Response incorrectly contained user");
         Assertions.assertNull(registerResult.authToken, "Response incorrectly contained authentication string");
     }
 
@@ -272,7 +272,7 @@ public class StandardAPITests {
                 "Server response code was not 400 Bad Request");
         Assertions.assertTrue(registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
-        Assertions.assertNull(registerResult.username, "Response incorrectly contained username");
+        Assertions.assertNull(registerResult.username, "Response incorrectly contained user");
         Assertions.assertNull(registerResult.authToken, "Response incorrectly contained authentication string");
     }
 

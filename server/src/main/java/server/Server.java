@@ -11,11 +11,14 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static spark.Spark.webSocket;
+
 public class Server {
     UserService userService;
     GameService gameService;
     AdminService adminService;
     AuthService authService;
+    WebSocketHandler webSocketHandler;
 
     public static final Logger log = Logger.getLogger("chess");
 
@@ -27,6 +30,8 @@ public class Server {
 
             var webDir = Paths.get(Server.class.getProtectionDomain().getCodeSource().getLocation().getPath(), "web");
             Spark.externalStaticFileLocation(webDir.toString());
+
+            webSocket("/connect", webSocketHandler);
 
             Spark.delete("/db", this::clearApplication);
             Spark.post("/user", this::registerUser);
@@ -65,6 +70,7 @@ public class Server {
         gameService = new GameService(dataAccess);
         adminService = new AdminService(dataAccess);
         authService = new AuthService(dataAccess);
+        webSocketHandler = new WebSocketHandler(dataAccess);
     }
 
     private Object errorHandler(CodedException e, Request req, Response res) {
@@ -77,7 +83,7 @@ public class Server {
 
 
     private void log(Request req, Response res) {
-        log.info(String.format("[%s] %s - %s", req.requestMethod(), req.pathInfo(), res.status()));
+        // log.info(String.format("[%s] %s - %s", req.requestMethod(), req.pathInfo(), res.status()));
     }
 
     /**
