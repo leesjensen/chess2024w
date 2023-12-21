@@ -5,6 +5,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import util.CodedException;
 
 /**
@@ -12,9 +13,11 @@ import util.CodedException;
  */
 public class AuthService {
 
-    private final DataAccess dataAccess;
+    final private DataAccess dataAccess;
+    final private BCryptPasswordEncoder encoder;
 
     public AuthService(DataAccess dataAccess) {
+        encoder = new BCryptPasswordEncoder();
         this.dataAccess = dataAccess;
     }
 
@@ -27,9 +30,11 @@ public class AuthService {
      */
     public AuthData createSession(UserData user) throws CodedException {
         try {
-            UserData loggedInUser = dataAccess.readUser(user.username());
-            if (loggedInUser != null && loggedInUser.password().equals(user.password())) {
-                return dataAccess.writeAuth(loggedInUser.username());
+            UserData storedUser = dataAccess.readUser(user.username());
+            if (storedUser != null) {
+                if (encoder.matches(user.password(), storedUser.password())) {
+                    return dataAccess.writeAuth(storedUser.username());
+                }
             }
             throw new CodedException(401, "Invalid username or password");
         } catch (DataAccessException ex) {

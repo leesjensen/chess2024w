@@ -4,6 +4,7 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import spark.utils.StringUtils;
 import util.CodedException;
 
@@ -12,8 +13,10 @@ import util.CodedException;
  */
 public class UserService {
     final private DataAccess dataAccess;
+    final private BCryptPasswordEncoder encoder;
 
     public UserService(DataAccess dataAccess) {
+        encoder = new BCryptPasswordEncoder();
         this.dataAccess = dataAccess;
     }
 
@@ -30,6 +33,9 @@ public class UserService {
         if (StringUtils.isEmpty(user.password())) throw new CodedException(400, "missing password");
 
         try {
+            var hashedPassword = encoder.encode(user.password());
+            user = new UserData(user.username(), hashedPassword, user.email());
+
             user = dataAccess.writeUser(user);
             return dataAccess.writeAuth(user.username());
         } catch (DataAccessException ex) {
