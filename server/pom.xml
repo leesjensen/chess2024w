@@ -79,6 +79,11 @@
             <version>2.9.3</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>6.2.1</version>
+        </dependency>
+        <dependency>
             <groupId>edu.byu.cs240</groupId>
             <artifactId>passoff-dependencies</artifactId>
             <version>1.0</version>
