@@ -47,7 +47,7 @@ public class TestFactory {
          * just know increasing it can make tests take longer to run.
          * (On the flip side, if you've got a good computer feel free to decrease it)
          */
-        return 3000000L;
+        return 3000L;
     }
     // ------------------------------------------------------------------------------------------------------------------
 
@@ -63,8 +63,9 @@ public class TestFactory {
         var board = loadBoard(boardText);
         var testPiece = board.getPiece(startPosition);
         var validMoves = loadMoves(startPosition, endPositions);
+        var pieceMoves = new HashSet<>(testPiece.pieceMoves(board, startPosition));
 
-        Assertions.assertEquals(validMoves, testPiece.pieceMoves(board, startPosition), "Wrong moves");
+        Assertions.assertEquals(validMoves, pieceMoves, "Wrong moves");
     }
 
     final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
