@@ -5,13 +5,13 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 public class KingMovementRule extends MovementRule {
     @Override
     public Collection<ChessMove> moves(ChessBoard board, ChessPosition position) {
-        var moves = new HashSet<ChessMove>();
+        var moves = new ArrayList<ChessMove>();
         calculateMoves(board, position, -1, 0, moves, false);
         calculateMoves(board, position, 1, 0, moves, false);
         calculateMoves(board, position, 0, 1, moves, false);
@@ -27,7 +27,7 @@ public class KingMovementRule extends MovementRule {
     }
 
 
-    void addCastleMoves(ChessBoard board, ChessPosition pos, HashSet<ChessMove> moves) {
+    void addCastleMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> moves) {
         var king = board.getPiece(pos);
         var color = king.getTeamColor();
         var teamRow = color == ChessGame.TeamColor.BLACK ? 8 : 1;

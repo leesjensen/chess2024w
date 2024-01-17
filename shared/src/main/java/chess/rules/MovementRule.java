@@ -5,11 +5,10 @@ import chess.ChessMove;
 import chess.ChessPosition;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 public abstract class MovementRule {
 
-    protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc, HashSet<ChessMove> moves, boolean allowDistance) {
+    protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc, Collection<ChessMove> moves, boolean allowDistance) {
         var pieceColor = board.getPiece(pos).getTeamColor();
         int row = pos.getRow() + rowInc;
         int col = pos.getColumn() + colInc;

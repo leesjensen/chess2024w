@@ -28,7 +28,7 @@ public class PawnMovementRule extends MovementRule {
     }
 
     @Override
-    protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc, HashSet<ChessMove> moves, boolean attack) {
+    protected void calculateMoves(ChessBoard board, ChessPosition pos, int rowInc, int colInc, Collection<ChessMove> moves, boolean attack) {
         var pieceColor = board.getPiece(pos).getTeamColor();
         int row = pos.getRow() + rowInc;
         int col = pos.getColumn() + colInc;
@@ -42,7 +42,7 @@ public class PawnMovementRule extends MovementRule {
         }
     }
 
-    private void addMoveWithPossiblePromotion(ChessPosition pos, ChessPosition newPos, HashSet<ChessMove> moves) {
+    private void addMoveWithPossiblePromotion(ChessPosition pos, ChessPosition newPos, Collection<ChessMove> moves) {
         if (newPos.getRow() == 1 || newPos.getRow() == 8) {
             moves.add(new ChessMove(pos, newPos, ChessPiece.PieceType.QUEEN));
             moves.add(new ChessMove(pos, newPos, ChessPiece.PieceType.BISHOP));

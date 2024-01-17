@@ -2,8 +2,8 @@ package chess;
 
 import chess.rules.Rules;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
 import static chess.ChessGame.*;
@@ -64,7 +64,7 @@ public class ChessPiece {
             return Rules.movementRule(piece.getPieceType()).moves(board, pos);
         }
 
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
 
