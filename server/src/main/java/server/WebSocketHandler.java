@@ -34,7 +34,6 @@ public class WebSocketHandler {
 
 
         private void send(String msg) throws Exception {
-            System.out.printf("Send to %s: %s%n", user.username(), msg);
             session.getRemote().sendString(msg);
         }
 
@@ -44,7 +43,6 @@ public class WebSocketHandler {
 
         private static void sendError(RemoteEndpoint endpoint, String msg) throws Exception {
             var errMsg = (new ErrorMessage(String.format("ERROR: %s", msg))).toString();
-            System.out.println(errMsg);
             endpoint.sendString(errMsg);
         }
 
