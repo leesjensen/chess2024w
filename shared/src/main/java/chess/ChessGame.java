@@ -2,8 +2,8 @@ package chess;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -24,7 +24,7 @@ public class ChessGame {
     public static ChessGame create(String serializedGame) {
         return new Gson().fromJson(serializedGame, ChessGame.class);
     }
-    
+
     /**
      * @return Which team's turn it is
      */
@@ -57,7 +57,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        var validMoves = new HashSet<ChessMove>();
+        var validMoves = new ArrayList<ChessMove>();
         var piece = board.getPiece(startPosition);
         if (piece != null) {
             var possibleMoves = piece.pieceMoves(board, startPosition);
