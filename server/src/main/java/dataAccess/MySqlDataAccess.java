@@ -80,14 +80,14 @@ public class MySqlDataAccess implements DataAccess {
         var game = new ChessGame();
         game.getBoard().resetBoard();
         var state = GameData.State.UNDECIDED;
-        var ID = executeUpdate("INSERT INTO `game` (gameName, whitePlayerName, blackPlayerName, game, state) VALUES (?, ?, ?, ?, ?)",
+        var id = executeUpdate("INSERT INTO `game` (gameName, whitePlayerName, blackPlayerName, game, state) VALUES (?, ?, ?, ?, ?)",
                 gameName,
                 null,
                 null,
                 game.toString(),
                 state.toString());
-        if (ID != 0) {
-            return new GameData(ID, null, null, gameName, game, state);
+        if (id != 0) {
+            return new GameData(id, null, null, gameName, game, state);
         }
 
         return null;

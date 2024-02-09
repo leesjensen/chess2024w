@@ -258,15 +258,15 @@ public class ChessBoard {
     /**
      * Set both the foreground and background color. Foreground is 3, background is 4.
      */
-    private static String color(int FG, int BG) {
-        return String.format("\u001b[3%d;4%dm", FG, BG);
+    private static String color(int foreground, int background) {
+        return String.format("\u001b[3%d;4%dm", foreground, background);
     }
 
     /**
      * Set the foreground color.
      */
-    private static String color(int FG) {
-        return String.format("\u001b[1;3%dm", FG);
+    private static String color(int foreground) {
+        return String.format("\u001b[1;3%dm", foreground);
     }
 
     private static final String BORDER = color(BLACK, YELLOW);
