@@ -66,7 +66,7 @@ public class ChessClient implements DisplayHandler {
     private String help(String[] ignored) {
         return switch (userState) {
             case LOGGED_IN -> getHelp(loggedInHelp);
-            case OBSERVING -> getHelp(ObservingHelp);
+            case OBSERVING -> getHelp(observingHelp);
             case BLACK, WHITE -> getHelp(playingHelp);
             default -> getHelp(loggedOutHelp);
         };
@@ -332,7 +332,7 @@ public class ChessClient implements DisplayHandler {
             new Help("help", "with possible commands")
     );
 
-    static final List<Help> ObservingHelp = List.of(
+    static final List<Help> observingHelp = List.of(
             new Help("legal", "moves for the current board"),
             new Help("redraw", "the board"),
             new Help("leave", "the game"),
