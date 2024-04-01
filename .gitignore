@@ -10,3 +10,4 @@ out/
 .DS_Store
 
 db.properties
+/server/src/main/resources/web/client.jar

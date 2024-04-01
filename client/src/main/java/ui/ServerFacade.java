@@ -23,6 +23,10 @@ public class ServerFacade {
         serverUrl = String.format("http://%s", serverName);
     }
 
+    public ServerFacade(int port) {
+        serverUrl = String.format("http://localhost:%d", port);
+    }
+
 
     public void clear() throws ResponseException {
         var r = this.makeRequest("DELETE", "/db", null, null, Map.class);

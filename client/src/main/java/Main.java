@@ -11,6 +11,7 @@ public class Main {
 
             ChessClient client = new ChessClient(serverName);
             System.out.println("👑 Welcome to 240 chess. Type Help to get started. 👑");
+            System.out.println("   Connected to " + serverName);
             Scanner scanner = new Scanner(System.in);
 
             var result = "";
