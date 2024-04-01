@@ -24,9 +24,9 @@ public class ChessClient implements DisplayHandler {
     final private WebSocketFacade webSocket;
 
 
-    public ChessClient() throws Exception {
-        server = new ServerFacade(8080);
-        webSocket = new WebSocketFacade(8080, this);
+    public ChessClient(String hostname) throws Exception {
+        server = new ServerFacade(hostname);
+        webSocket = new WebSocketFacade(hostname, this);
     }
 
     public String eval(String input) {
